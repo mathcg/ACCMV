@@ -31,4 +31,10 @@ Functions include:
 - `ipw_regression`: this function output weights for IPW and the weights can be used for estimating the regression parameters. 
 - `bootstrap_regression`: this function implements bootstrap for estimating regression parameters. 
 
+## diabetes_demo.R
+An R script for demonstrating how to use the functions mentioned above. We apply our estimators to the Pima Indians Diabetes Dataset. 
+
+## diabetes.csv
+The Pima Indians Diabetes Dataset. It is downloaded from https://www.kaggle.com/datasets/uciml/pima-indians-diabetes-database. This dataset is to diagnostically predict whether or not a patient has diabetes, based on certain diagnostic measurements included in the dataset. 
+
 
