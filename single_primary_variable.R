@@ -305,7 +305,6 @@ single_multiply_robust <- function(data, fun=identity, binary=F) {
             temp[position_1] = ra_fit
             theta_est = mean(temp)
         }
-        pattern_est[i] = theta_est
         theta_estimate = theta_estimate + theta_est
     }
     return(theta_estimate)
