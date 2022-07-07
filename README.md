@@ -2,7 +2,8 @@
 
 Code for paper "Handling Nonmonotone Missing Data with Available Complete-Case Missing Value Assumption". 
 
-- Paper reference: To be added
+- Paper reference: [Handling Nonmonotone Missing Data with Available Complete-Case Missing Value Assumption](https://arxiv.org/abs/2207.02289)
+
 - Contact: mathchenggang@gmail.com
 
 ## single_primary_variabe.R
