@@ -103,6 +103,18 @@ def _design(*parts: NDArray[np.float64]) -> NDArray[np.float64]:
     return np.column_stack([np.ones(n), *usable])
 
 
+def _quadratic_design(values: NDArray[np.float64]) -> NDArray[np.float64]:
+    """Intercept, linear terms, and unique second-order products."""
+
+    values = np.asarray(values, dtype=float).reshape(len(values), -1)
+    products = [
+        values[:, left] * values[:, right]
+        for left in range(values.shape[1])
+        for right in range(left, values.shape[1])
+    ]
+    return np.column_stack([np.ones(len(values)), values, *products])
+
+
 def _linear_fit(x: NDArray[np.float64], y: NDArray[np.float64]) -> NDArray[np.float64]:
     return np.linalg.lstsq(x, y, rcond=None)[0]
 
@@ -265,6 +277,9 @@ def _conditional_target(
     if ycols.size == 0:
         response = _target_values(data.y[donors], target, threshold)
         binary = target == "indicator"
+        if target == "product":
+            cov_train = _quadratic_design(data.x[donors][:, xcols])
+            cov_new = _quadratic_design(data.x[recipients][:, xcols])
         beta = _outcome_fit(cov_train, response, binary)
         return _predict(cov_train, beta, binary), _predict(cov_new, beta, binary)
     if ycols.size != 1 or missing.size != 1:

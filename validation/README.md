@@ -26,7 +26,7 @@ small Monte Carlo bias:
 | Design | IPW | RA | MR |
 |---|---:|---:|---:|
 | Single-primary bias | -0.0144 | 0.0006 | 0.0014 |
-| Multiple-primary bias | 0.0016 | -0.0079 | 0.0002 |
+| Multiple-primary bias | 0.0016 | 0.0005 | 0.0004 |
 
 For Section 7.3, the ACCMV-weighted regression biases were `0.0008` for the
 intercept and `-0.0004` for the slope. The complete-case biases were `-0.0572`

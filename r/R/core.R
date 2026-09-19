@@ -52,6 +52,18 @@ multiple_data_preparation <- function(x, y) accmv_data(x, y)
   do.call(cbind, pieces)
 }
 
+.quadratic_design <- function(values) {
+  values <- as.matrix(values); output <- cbind(`(Intercept)` = 1, values)
+  if (ncol(values)) {
+    for (left in seq_len(ncol(values))) {
+      for (right in left:ncol(values)) {
+        output <- cbind(output, values[, left] * values[, right])
+      }
+    }
+  }
+  output
+}
+
 .logit_fit <- function(design, response) {
   if (length(unique(response)) != 2L) {
     stop("each fitted odds model needs observations in both comparison groups")
@@ -189,6 +201,11 @@ single_multiply_robust <- function(data, fun = identity, binary = FALSE) {
   if (!length(ycols)) {
     response <- .target_values(data$y[donor, , drop = FALSE], target, threshold)
     binary <- target == "indicator"; coef <- .outcome_fit(d0, response, binary)
+    if (target == "product") {
+      d0 <- .quadratic_design(data$x[donor, xcols, drop = FALSE])
+      d1 <- .quadratic_design(data$x[recipient, xcols, drop = FALSE])
+      coef <- .outcome_fit(d0, response, FALSE)
+    }
     return(list(m0 = .predict_fit(d0, coef, binary), m1 = .predict_fit(d1, coef, binary)))
   }
   if (target == "indicator") {

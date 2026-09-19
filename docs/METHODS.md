@@ -18,7 +18,10 @@ this is the partial order `R >= r` used in the paper.
 
 Log-odds models include an intercept and all observed primary and secondary
 variables permitted by the pattern. Continuous regression models use least
-squares and indicator targets use logistic regression.
+squares and indicator targets use logistic regression. For the product moment
+with neither primary variable observed, the regression basis contains linear,
+squared, and pairwise-product terms, as required by the paper's multivariate
+normal validation design.
 
 The high-level entry points are `estimate_single()` and `estimate_multiple()`
 in Python and `estimate_accmv_single()` and `estimate_accmv_multiple()` in R.
