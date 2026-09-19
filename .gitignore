@@ -1,2 +1,16 @@
 .DS_Store
 .gitignore
+.Rcheck/
+*.Rcheck/
+*.tar.gz
+.Rhistory
+.Rproj.user/
+python/.venv/
+python/.pytest_cache/
+python/.ruff_cache/
+python/.coverage
+python/dist/
+python/build/
+python/**/*.egg-info/
+__pycache__/
+*.py[cod]

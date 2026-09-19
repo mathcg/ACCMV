@@ -1,0 +1,30 @@
+cff-version: 1.2.0
+message: "If you use ACCMV, please cite the paper below."
+title: "ACCMV: Available Complete-Case Missing Value Inference"
+type: software
+authors:
+  - family-names: Cheng
+    given-names: Gang
+  - family-names: Chen
+    given-names: Yen-Chi
+  - family-names: Smith
+    given-names: Maureen A.
+  - family-names: Zhao
+    given-names: Ying-Qi
+version: 0.1.0
+date-released: 2026-09-19
+repository-code: "https://github.com/mathcg/ACCMV"
+preferred-citation:
+  type: article
+  title: "Handling Nonmonotone Missing Data with Available Complete-Case Missing Value Assumption"
+  authors:
+    - family-names: Cheng
+      given-names: Gang
+    - family-names: Chen
+      given-names: Yen-Chi
+    - family-names: Smith
+      given-names: Maureen A.
+    - family-names: Zhao
+      given-names: Ying-Qi
+  year: 2022
+  url: "https://arxiv.org/abs/2207.02289"

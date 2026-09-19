@@ -1,0 +1,26 @@
+Package: accmv
+Type: Package
+Title: Inference with Available Complete-Case Missing Values
+Version: 0.1.0
+Authors@R: c(
+    person("Gang", "Cheng", role = c("aut", "cre"),
+           email = "mathchenggang@gmail.com"),
+    person("Yen-Chi", "Chen", role = "aut"),
+    person("Maureen A.", "Smith", role = "aut"),
+    person("Ying-Qi", "Zhao", role = "aut")
+  )
+Description: Implements inverse probability weighted, regression adjustment,
+    and multiply robust estimators under the available complete-case missing
+    value assumption of Cheng, Chen, Smith, and Zhao (2022)
+    <doi:10.48550/arXiv.2207.02289>. Supports one or two primary variables,
+    exponential-tilt sensitivity analysis, regression weights, and
+    nonparametric bootstrap confidence intervals.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Depends: R (>= 4.1.0)
+Suggests:
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+URL: https://github.com/mathcg/ACCMV,
+    https://arxiv.org/abs/2207.02289
+BugReports: https://github.com/mathcg/ACCMV/issues
