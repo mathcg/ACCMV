@@ -2,6 +2,7 @@
 
 [![Python and R CI](https://github.com/mathcg/ACCMV/actions/workflows/ci.yml/badge.svg)](https://github.com/mathcg/ACCMV/actions/workflows/ci.yml)
 [![GitHub release](https://img.shields.io/github/v/release/mathcg/ACCMV)](https://github.com/mathcg/ACCMV/releases/latest)
+[![PyPI](https://img.shields.io/pypi/v/accmv)](https://pypi.org/project/accmv/)
 
 `ACCMV` implements inference under the **available complete-case missing value
 assumption** for nonmonotone missing data. The repository contains matched R
@@ -24,7 +25,7 @@ remotes::install_github("mathcg/ACCMV", subdir = "r")
 ```
 
 ```bash
-python -m pip install "accmv @ git+https://github.com/mathcg/ACCMV.git#subdirectory=python"
+python -m pip install accmv
 ```
 
 ## Quick start

@@ -4,6 +4,10 @@ Python implementation of inverse-probability-weighted (IPW), regression-adjustme
 (RA), and multiply-robust (MR) inference under the available complete-case missing
 value assumption.
 
+```bash
+python -m pip install accmv
+```
+
 ```python
 from accmv import estimate_single
 
