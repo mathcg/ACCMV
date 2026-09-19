@@ -307,10 +307,12 @@ ipw_regression <- function(data) accmv_ipw_weights(data)
   weights <- accmv_ipw_weights(data)
   complete <- rowSums(is.na(data$y)) == 0L
   design <- cbind(`(Intercept)` = 1, data$y[complete, columns$predictors, drop = FALSE])
+  colnames(design) <- c("(Intercept)", paste0("y", columns$predictors))
   root_weight <- sqrt(weights[complete])
   coefficients <- qr.solve(design * root_weight,
                            data$y[complete, columns$response] * root_weight,
                            tol = 1e-10)
+  names(coefficients) <- colnames(design)
   list(coefficients = drop(coefficients), weights = weights)
 }
 

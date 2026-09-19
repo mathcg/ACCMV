@@ -14,3 +14,8 @@ multiple_data_preparation(x, y)
 }
 \value{An object containing the data and stable missing-pattern encodings.}
 \description{Validates data and identifies observed-value patterns.}
+\examples{
+x <- matrix(c(1, NA, 2, 3, NA, 4), ncol = 2)
+y <- c(1, NA, 2)
+accmv_data(x, y)
+}

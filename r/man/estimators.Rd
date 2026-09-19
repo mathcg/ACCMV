@@ -55,3 +55,10 @@ ipw_regression(data)
 }
 \value{High-level functions return an \code{accmv_result}; low-level functions return an estimate or weights.}
 \description{Fits the estimators described in Cheng et al. (2022).}
+\examples{
+sim <- simulate_accmv_single(500, seed = 1)
+estimate_accmv_single(sim$x, sim$y, method = "ra")
+
+sim2 <- simulate_accmv_multiple(500, seed = 2)
+estimate_accmv_multiple(sim2$x, sim2$y, method = "mr", target = "product")
+}

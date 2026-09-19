@@ -16,3 +16,7 @@ fit_accmv_regression(x, y, response = 2, predictors = 1,
 }
 \value{An \code{accmv_regression_result} with coefficients, weights, and optional bootstrap inference.}
 \description{Fits a weighted least-squares marginal model using the ACCMV IPW weights from Section 5.}
+\examples{
+sim <- simulate_accmv_regression(500, seed = 3)
+fit_accmv_regression(sim$x, sim$y)
+}

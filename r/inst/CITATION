@@ -1,0 +1,15 @@
+citHeader("To cite accmv or the ACCMV method in publications, please use:")
+
+bibentry(
+  bibtype = "Misc",
+  title = "Handling Nonmonotone Missing Data with Available Complete-Case Missing Value Assumption",
+  author = c(
+    person("Gang", "Cheng"),
+    person("Yen-Chi", "Chen"),
+    person("Maureen A.", "Smith"),
+    person("Ying-Qi", "Zhao")
+  ),
+  year = "2022",
+  note = "arXiv:2207.02289",
+  url = "https://arxiv.org/abs/2207.02289"
+)
