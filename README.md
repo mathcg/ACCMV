@@ -1,6 +1,7 @@
 # ACCMV
 
 [![Python and R CI](https://github.com/mathcg/ACCMV/actions/workflows/ci.yml/badge.svg)](https://github.com/mathcg/ACCMV/actions/workflows/ci.yml)
+[![GitHub release](https://img.shields.io/github/v/release/mathcg/ACCMV)](https://github.com/mathcg/ACCMV/releases/latest)
 
 `ACCMV` implements inference under the **available complete-case missing value
 assumption** for nonmonotone missing data. The repository contains matched R
@@ -13,6 +14,9 @@ average, product-moment, and joint-distribution targets. Missing values are
 represented by `NA` in R and `numpy.nan` in Python.
 
 ## Installation
+
+Version 0.1.1 has been submitted to CRAN and is awaiting CRAN review. Until it
+appears in the CRAN package index, install the validated release from GitHub:
 
 ```r
 # install.packages("remotes")

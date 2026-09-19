@@ -14,3 +14,8 @@ The remaining note is the expected `New submission` note.
 ## Downstream dependencies
 
 There are currently no downstream dependencies because this is a new package.
+
+## Submission
+
+Version 0.1.1 was submitted through the CRAN web form on 2026-09-19 after the
+maintainer confirmed the required repository-policy statement.
