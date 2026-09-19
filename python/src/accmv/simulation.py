@@ -58,3 +58,29 @@ def simulate_multiple_paper(n: int = 2000, random_state: int | None = None):
             mean = np.full(d, 0.5 if d == 1 else 1.0)
             x[i, xcols] = rng.multivariate_normal(mean, _sigma(d))
     return x, y
+
+
+def simulate_regression_paper(n: int = 2000, random_state: int | None = None):
+    """Simulate Section 7.3; the true coefficients are ``(-1, 0.5)``."""
+
+    if n < 1:
+        raise ValueError("n must be positive")
+    rng = np.random.default_rng(random_state)
+    full = rng.multivariate_normal(np.array([1.0, 0.0, -1.0]), _sigma(3), size=n)
+    ratio = np.exp(np.clip(0.5 * full[:, 0], -30.0, 30.0))
+    base = 1.0 / (5.0 + 3.0 * ratio)
+    probabilities = np.column_stack(
+        [base, base, base, base, base * ratio, base * ratio, base * ratio, base]
+    )
+    uniforms = rng.random(n)
+    category = np.minimum(
+        (uniforms[:, None] > np.cumsum(probabilities, axis=1)).sum(axis=1), 7
+    )
+    patterns = np.array([[False, False], [False, True], [True, False], [True, True]])
+    r = (category >= 4).astype(int)
+    a = np.where(category < 4, category, np.where(category < 7, category - 4, 3))
+    x = full[:, :1].copy()
+    y = full[:, 1:].copy()
+    x[r == 0, 0] = np.nan
+    y[~patterns[a]] = np.nan
+    return x, y

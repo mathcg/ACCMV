@@ -39,6 +39,11 @@ fit = estimate_single(x, y, method="mr", n_boot=499, random_state=1)
 print(fit.estimate, fit.conf_int)
 ```
 
+The paper's marginal linear model is available in both languages through
+`fit_accmv_regression()` (R) and `fit_ipw_regression()` (Python). Both use
+one-based primary-variable column indices so equivalent calls have the same
+arguments.
+
 See [`docs/METHODS.md`](docs/METHODS.md) for the API-to-paper mapping and
 [`validation/README.md`](validation/README.md) for reproducibility checks. The
 original research scripts and diabetes demonstration remain at the repository
@@ -55,4 +60,3 @@ If you use this software or the ACCMV method, please cite:
 ## License
 
 MIT © Gang Cheng.
-

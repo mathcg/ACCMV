@@ -1,10 +1,12 @@
 \name{simulate_accmv_single}
 \alias{simulate_accmv_single}
 \alias{simulate_accmv_multiple}
+\alias{simulate_accmv_regression}
 \title{Paper Simulation Designs}
 \usage{
 simulate_accmv_single(n = 2000, seed = NULL)
 simulate_accmv_multiple(n = 2000, seed = NULL)
+simulate_accmv_regression(n = 2000, seed = NULL)
 }
 \arguments{
 \item{n}{Sample size.}

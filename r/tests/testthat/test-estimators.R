@@ -31,3 +31,10 @@ test_that("R agrees with Python on the shared fixture", {
     expect_equal(fit$estimate, unname(expected[method]), tolerance = 1e-5)
   }
 })
+
+test_that("marginal regression recovers the Section 7.3 coefficients", {
+  dat <- simulate_accmv_regression(10000, seed = 73)
+  fit <- fit_accmv_regression(dat$x, dat$y)
+  expect_equal(fit$coefficients, c(-1, .5), tolerance = .12)
+  expect_true(all(fit$weights >= 0))
+})

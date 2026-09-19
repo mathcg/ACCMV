@@ -289,6 +289,70 @@ accmv_ipw_weights <- function(data) {
 #' @export
 ipw_regression <- function(data) accmv_ipw_weights(data)
 
+.regression_columns <- function(data, response, predictors) {
+  response <- as.integer(response); predictors <- as.integer(predictors)
+  if (length(response) != 1L || response < 1L || response > ncol(data$y)) {
+    stop("response must be a valid one-based y column index")
+  }
+  if (!length(predictors) || any(predictors < 1L | predictors > ncol(data$y))) {
+    stop("predictors must contain valid one-based y column indices")
+  }
+  if (response %in% predictors) stop("response may not also be a predictor")
+  if (anyDuplicated(predictors)) stop("predictor indices must be unique")
+  list(response = response, predictors = predictors)
+}
+
+.weighted_regression <- function(data, response, predictors) {
+  columns <- .regression_columns(data, response, predictors)
+  weights <- accmv_ipw_weights(data)
+  complete <- rowSums(is.na(data$y)) == 0L
+  design <- cbind(`(Intercept)` = 1, data$y[complete, columns$predictors, drop = FALSE])
+  root_weight <- sqrt(weights[complete])
+  coefficients <- qr.solve(design * root_weight,
+                           data$y[complete, columns$response] * root_weight,
+                           tol = 1e-10)
+  list(coefficients = drop(coefficients), weights = weights)
+}
+
+#' Fit an ACCMV-weighted marginal linear regression
+#' @param x Numeric secondary-variable matrix.
+#' @param y Numeric primary-variable matrix.
+#' @param response One-based response column in `y`.
+#' @param predictors One-based predictor columns in `y`.
+#' @param n_boot Number of bootstrap replicates; zero disables bootstrap.
+#' @param level Confidence level.
+#' @param seed Optional bootstrap seed.
+#' @return An `accmv_regression_result` object.
+#' @export
+fit_accmv_regression <- function(x, y, response = 2, predictors = 1,
+                                 n_boot = 0, level = .95, seed = NULL) {
+  data <- accmv_data(x, y)
+  point <- .weighted_regression(data, response, predictors)
+  output <- list(coefficients = point$coefficients, response = as.integer(response),
+                 predictors = as.integer(predictors), nobs = nrow(data$y),
+                 weights = point$weights)
+  if (n_boot > 0) {
+    if (!is.null(seed)) set.seed(seed)
+    values <- list(); attempts <- 0L
+    while (length(values) < n_boot && attempts < max(10L * n_boot, 100L)) {
+      attempts <- attempts + 1L
+      sampled <- .resample_data(data, sample.int(nrow(data$y), replace = TRUE))
+      value <- try(.weighted_regression(sampled, response, predictors)$coefficients,
+                   silent = TRUE)
+      if (!inherits(value, "try-error") && all(is.finite(value))) {
+        values[[length(values) + 1L]] <- value
+      }
+    }
+    if (length(values) != n_boot) stop("too many bootstrap samples lacked estimable comparisons")
+    bootstrap <- do.call(rbind, values); alpha <- 1 - level
+    output$bootstrap <- bootstrap
+    output$std.error <- apply(bootstrap, 2L, sd)
+    output$conf.int <- t(apply(bootstrap, 2L, quantile,
+                               probs = c(alpha / 2, 1 - alpha / 2), names = FALSE))
+  } else if (n_boot < 0) stop("n_boot must be nonnegative")
+  structure(output, class = "accmv_regression_result")
+}
+
 #' Bootstrap an ACCMV-weighted regression
 #' @param fm Regression formula using columns of the primary-variable matrix.
 #' @param method A model-fitting function such as [stats::lm()].
@@ -424,5 +488,12 @@ print.accmv_result <- function(x, ...) {
   cat("ACCMV", toupper(x$method), "estimate for", x$target, "\n")
   cat("Estimate:", format(x$estimate), "\n")
   if (!is.null(x$std.error)) cat("Bootstrap SE:", format(x$std.error), "\n")
+  invisible(x)
+}
+
+#' @export
+print.accmv_regression_result <- function(x, ...) {
+  cat("ACCMV IPW weighted linear regression\n")
+  print(x$coefficients)
   invisible(x)
 }

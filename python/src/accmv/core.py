@@ -46,6 +46,20 @@ class ACCMVResult:
     conf_int: tuple[float, float] | None = None
 
 
+@dataclass(frozen=True)
+class ACCMVRegressionResult:
+    """Weighted linear-regression estimate for a marginal primary-data model."""
+
+    coefficients: NDArray[np.float64]
+    response: int
+    predictors: tuple[int, ...]
+    nobs: int
+    weights: NDArray[np.float64]
+    bootstrap_values: NDArray[np.float64] | None = None
+    std_error: NDArray[np.float64] | None = None
+    conf_int: NDArray[np.float64] | None = None
+
+
 def _matrix(value: ArrayLike, name: str) -> NDArray[np.float64]:
     arr = np.asarray(value, dtype=float)
     if arr.ndim == 1:
@@ -367,6 +381,90 @@ def ipw_regression_weights(data: ACCMVData) -> NDArray[np.float64]:
             np.clip(_design(data.x[donors][:, xcols], data.y[donors][:, ycols]) @ beta, -30, 30)
         )
     return weights
+
+
+def _regression_columns(
+    data: ACCMVData, response: int, predictors: tuple[int, ...]
+) -> tuple[int, NDArray[np.int64]]:
+    """Validate shared one-based primary-variable column indices."""
+
+    response_index = int(response) - 1
+    predictor_indices = np.asarray(predictors, dtype=int) - 1
+    if response_index < 0 or response_index >= data.y.shape[1]:
+        raise ValueError("response must be a valid one-based y column index")
+    if predictor_indices.size == 0:
+        raise ValueError("predictors must contain at least one one-based y column index")
+    if np.any(predictor_indices < 0) or np.any(predictor_indices >= data.y.shape[1]):
+        raise ValueError("predictors contains an invalid one-based y column index")
+    if response_index in predictor_indices:
+        raise ValueError("response may not also be a predictor")
+    if np.unique(predictor_indices).size != predictor_indices.size:
+        raise ValueError("predictor indices must be unique")
+    return response_index, predictor_indices
+
+
+def _weighted_regression(
+    data: ACCMVData, response: int, predictors: tuple[int, ...]
+) -> tuple[NDArray[np.float64], NDArray[np.float64]]:
+    response_index, predictor_indices = _regression_columns(data, response, predictors)
+    weights = ipw_regression_weights(data)
+    complete = ~np.isnan(data.y).any(axis=1)
+    design = _design(data.y[complete][:, predictor_indices])
+    root_weight = np.sqrt(weights[complete])
+    coefficients = np.linalg.lstsq(
+        design * root_weight[:, None],
+        data.y[complete, response_index] * root_weight,
+        rcond=None,
+    )[0]
+    return coefficients, weights
+
+
+def fit_ipw_regression(
+    x: ArrayLike,
+    y: ArrayLike,
+    *,
+    response: int = 2,
+    predictors: tuple[int, ...] = (1,),
+    n_boot: int = 0,
+    level: float = 0.95,
+    random_state: int | None = None,
+) -> ACCMVRegressionResult:
+    """Fit an ACCMV-weighted linear model among complete primary cases.
+
+    ``response`` and ``predictors`` are one-based column indices in both the R
+    and Python APIs. The defaults fit the Section 7.3 model ``y2 ~ y1``.
+    """
+
+    data = prepare_data(x, y)
+    predictors = tuple(int(value) for value in predictors)
+    coefficients, weights = _weighted_regression(data, response, predictors)
+    result = ACCMVRegressionResult(coefficients, response, predictors, data.n, weights)
+    if n_boot == 0:
+        return result
+    if n_boot < 1:
+        raise ValueError("n_boot must be nonnegative")
+    if not 0 < level < 1:
+        raise ValueError("level must lie strictly between zero and one")
+    rng = np.random.default_rng(random_state)
+    values: list[NDArray[np.float64]] = []
+    attempts = 0
+    while len(values) < n_boot and attempts < max(10 * n_boot, 100):
+        attempts += 1
+        try:
+            sample = _resample(data, rng.integers(0, data.n, data.n))
+            values.append(_weighted_regression(sample, response, predictors)[0])
+        except (ValueError, np.linalg.LinAlgError):
+            continue
+    if len(values) != n_boot:
+        raise RuntimeError("too many bootstrap samples lacked estimable pattern comparisons")
+    bootstrap = np.asarray(values)
+    alpha = 1.0 - level
+    return replace(
+        result,
+        bootstrap_values=bootstrap,
+        std_error=bootstrap.std(axis=0, ddof=1),
+        conf_int=np.quantile(bootstrap, [alpha / 2, 1 - alpha / 2], axis=0).T,
+    )
 
 
 def _resample(data: ACCMVData, indices: NDArray[np.int64]) -> ACCMVData:

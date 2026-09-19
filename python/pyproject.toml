@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "accmv"
-version = "0.1.0"
+version = "0.1.1"
 description = "Inference under the available complete-case missing value assumption"
 readme = "README.md"
 requires-python = ">=3.10"

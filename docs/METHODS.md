@@ -12,6 +12,7 @@ this is the partial order `R >= r` used in the paper.
 | Multiple-primary RA, equation (14) | `multiple_regression_adjustment()` | `multiple_ra_*()` |
 | Multiple-primary IPW, equation (16) | `multiple_ipw()` | `multiple_ipw()` |
 | Multiple-primary MR, equation (18) | `multiple_multiply_robust()` | `multiple_mr_*()` |
+| Marginal linear model, Section 5 | `fit_ipw_regression()` | `fit_accmv_regression()` |
 | Marginal-model weights, Section 5 | `ipw_regression_weights()` | `accmv_ipw_weights()` |
 | Sensitivity analysis, Section 6 | IPW `delta=` | IPW `delta=` |
 

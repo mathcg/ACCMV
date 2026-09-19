@@ -51,3 +51,28 @@ simulate_accmv_multiple <- function(n = 2000, seed = NULL) {
   }
   list(x = x, y = y)
 }
+
+#' Simulate the paper's marginal-regression experiment
+#' @inheritParams simulate_accmv_single
+#' @return A list with `x` and `y`; the true coefficients are -1 and 0.5.
+#' @export
+simulate_accmv_regression <- function(n = 2000, seed = NULL) {
+  if (!is.null(seed)) set.seed(seed)
+  if (n < 1L) stop("n must be positive")
+  full <- matrix(c(1, 0, -1), n, 3L, byrow = TRUE) +
+    matrix(rnorm(3L * n), n, 3L) %*% chol(.accmv_sigma(3L))
+  ratio <- exp(pmin(pmax(.5 * full[, 1], -30), 30))
+  base <- 1 / (5 + 3 * ratio)
+  category <- integer(n)
+  for (i in seq_len(n)) {
+    category[i] <- sample.int(8L, 1L,
+      prob = c(rep(base[i], 4L), rep(base[i] * ratio[i], 3L), base[i]))
+  }
+  patterns <- rbind(c(FALSE, FALSE), c(FALSE, TRUE), c(TRUE, FALSE), c(TRUE, TRUE))
+  r <- as.integer(category >= 5L)
+  a <- ifelse(category <= 4L, category, ifelse(category <= 7L, category - 4L, 4L))
+  x <- full[, 1, drop = FALSE]; y <- full[, 2:3, drop = FALSE]
+  x[r == 0L, 1] <- NA_real_
+  for (i in seq_len(n)) y[i, !patterns[a[i], ]] <- NA_real_
+  list(x = x, y = y)
+}

@@ -6,9 +6,11 @@ import pytest
 from accmv import (
     estimate_multiple,
     estimate_single,
+    fit_ipw_regression,
     ipw_regression_weights,
     prepare_data,
     simulate_multiple_paper,
+    simulate_regression_paper,
     simulate_single_paper,
 )
 
@@ -80,3 +82,18 @@ def test_multiple_targets_sensitivity_and_regression_weights():
     assert np.all(weights >= 0)
     assert np.all(weights[~complete] == 0)
     assert np.all(weights[complete] >= 1)
+
+
+def test_marginal_regression_recovers_section_7_3_coefficients():
+    x, y = simulate_regression_paper(10_000, random_state=73)
+    fit = fit_ipw_regression(x, y)
+    np.testing.assert_allclose(fit.coefficients, [-1.0, 0.5], atol=0.12)
+    assert np.all(fit.weights >= 0)
+
+
+def test_marginal_regression_bootstrap_is_reproducible():
+    x, y = simulate_regression_paper(1200, random_state=4)
+    one = fit_ipw_regression(x, y, n_boot=9, random_state=8)
+    two = fit_ipw_regression(x, y, n_boot=9, random_state=8)
+    np.testing.assert_array_equal(one.bootstrap_values, two.bootstrap_values)
+    assert one.conf_int.shape == (2, 2)
